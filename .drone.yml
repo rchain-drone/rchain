@@ -48,17 +48,6 @@ pipeline:
     commands:
       - sbt rholang/bnfc:generate compile test:compile it:compile doc
 
-  run-unit-tests:
-    <<: *sbtenv
-    commands:
-      - sbt test it:test
-
-  run-code-analysis:
-    <<: *sbtenv
-    commands:
-      - sbt scalafmtCheck coverage
-      - ./scripts/ci/codecov-upload
-
   # push
 
   package:
@@ -69,19 +58,6 @@ pipeline:
       - /var/cache/rchain-build/.sbt:/root/.sbt
       - /var/cache/rchain-build/.ivy2:/root/.ivy2
       - /var/run/docker.sock:/var/run/docker.sock
-    when:
-      event: [ push, tag ]
-
-  run-integration-tests:
-    <<: *buildenv
-    environment:
-      - _JAVA_OPTIONS=-Xms2G -Xmx8G
-    commands:
-      - ./scripts/ci/run-integration-tests.sh
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /tmp:/tmp
-      - /var/tmp/rchain-it:/var/tmp/rchain-it
     when:
       event: [ push, tag ]
 
@@ -96,29 +72,3 @@ pipeline:
       - /var/tmp/rchain-it:/var/tmp/rchain-it
     when:
       event: [ push, tag ]
-
-  publish:
-    <<: *buildenv
-    commands:
-      - ./scripts/ci/publish-artifacts
-    secrets:
-      - docker_username
-      - docker_password
-      - ssh_private_key
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    when:
-      event: [ push, tag ]
-
-  notify:
-    <<: *buildenv
-    commands:
-      - ./scripts/ci/send-email
-    secrets:
-      - email_host
-      - email_username
-      - email_password
-      - email_recipients
-    when:
-      event: [ push, tag ]
-      status: [ changed, failure ]
