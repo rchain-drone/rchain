@@ -65,6 +65,7 @@ pipeline:
     <<: *sbtenv
     commands:
       - env JAVAC_VERSION=1.8 sbt clean compile it:compile doc node/rpm:packageBin
+      - cp -f node/target/rpm/RPMS/noarch/rnode-*.noarch.rpm /var/tmp/rchain-it/
     volumes:
       - /var/cache/rchain-build/.sbt:/root/.sbt
       - /var/cache/rchain-build/.ivy2:/root/.ivy2
