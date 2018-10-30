@@ -93,6 +93,7 @@ pipeline:
       - /var/cache/rchain-build/.sbt:/root/.sbt
       - /var/cache/rchain-build/.ivy2:/root/.ivy2
       - /var/run/docker.sock:/var/run/docker.sock
+      - /var/tmp/rchain-it:/var/tmp/rchain-it
     when:
       event: [ push, tag ]
 
